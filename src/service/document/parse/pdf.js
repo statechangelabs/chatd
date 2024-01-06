@@ -6,7 +6,7 @@ const { splitText } = require("./clean");
 async function parsePdf(filePath) {
   const dataBuffer = await fs.readFile(filePath);
   const data = await pdf(dataBuffer);
-
+  console.log("The data length is : ", data.text.length);
   // TODO: add metadata and info here too as keys in map (see md.js)
 
   return {
