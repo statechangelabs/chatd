@@ -14,7 +14,7 @@ const {
   serve,
 } = require("./service/ollama/ollama.js");
 
-let model = "mistral";
+let model = "giraffe_test";
 
 function debugLog(msg) {
   if (global.debug) {
@@ -65,6 +65,8 @@ async function runOllamaModel(event, msg) {
 async function sendChat(event, msg) {
   let prompt = msg;
   const size = await vectorStoreSize();
+  console.log("The message is :", msg);
+  console.log("size of the vector store is :", size);
   if (size > 0) {
     const msgEmbeds = await embed({
       data: [
@@ -74,12 +76,15 @@ async function sendChat(event, msg) {
         },
       ],
     });
+    console.log("Message embeds is:", msgEmbeds);
+    console.log("Running search results now!!!");
     const searchResults = await search(msgEmbeds[0].embedding, 20);
+    console.log("Search results are:", searchResults);
     // format the system context search results
     let documentString = searchResults.join("\n\n");
     // Ensure the contextString does not exceed 500 characters
-    if (documentString.length > 500) {
-      documentString = documentString.substring(0, 497) + "...";
+    if (documentString.length > 5000) {
+      documentString = documentString.substring(0, 4997) + "...";
     }
     prompt = `Using the provided document, answer the user question to the best of your ability. You must try to use information from the provided document. Combine information in the document into a coherent answer.
 If there is nothing in the document relevant to the user question, say "Hmm, I don't see anything about that in this document." before providing any other information you know.
